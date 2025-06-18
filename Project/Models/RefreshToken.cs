@@ -10,10 +10,10 @@ public class RefreshToken
     public int EmployeeId { get; set; }
     
     [MaxLength(128)]
-    public string Token { get; set; }
+    public string Token { get; set; } = null!;
     
     public DateTime ExpiresAt { get; set; }
     
     [ForeignKey(nameof(EmployeeId))]
-    public virtual Employee Employee { get; set; }
+    public virtual Employee Employee { get; set; } = null!;
 }

@@ -12,21 +12,21 @@ public class Software
     public int Id { get; set; }
     
     [MaxLength(100)]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
     
     [MaxLength(500)]
-    public string Description { get; set; }
+    public string Description { get; set; } = null!;
     
     [MaxLength(20)]
-    public string CurrentVersion { get; set; }
+    public string CurrentVersion { get; set; } = null!;
     
     [MaxLength(50)]
-    public string Category { get; set; }
+    public string Category { get; set; } = null!;
     
     [Column(TypeName = "decimal")]
     [Precision(18, 2)]
     public decimal AnnualLicenseCost { get; set; }
     
-    public ICollection<Contract> Contracts { get; set; }
-    public ICollection<Discount> Discounts { get; set; }
+    public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    public ICollection<Discount> Discounts { get; set; } = new List<Discount>();
 }

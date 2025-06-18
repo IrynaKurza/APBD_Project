@@ -10,7 +10,7 @@ public class EmployeeRole
     public int Id { get; set; }
 
     [MaxLength(30)] 
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    public virtual ICollection<Employee> Employees { get; set; }
+    public virtual ICollection<Employee> Employees { get; set; } = null!;
 }

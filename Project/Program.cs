@@ -6,7 +6,7 @@ using Project.Data;
 using Project.Services;
 using Project.Services.Interfaces;
 using Project.Services.Services;
-using RevenueRecognitionSystem.Middlewares;
+using Project.Middlewares;
 using Scalar.AspNetCore;
 
 

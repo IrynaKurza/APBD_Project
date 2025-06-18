@@ -11,7 +11,7 @@ public class Discount
     public int Id { get; set; }
     
     [MaxLength(100)]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
     
     [Column(TypeName = "decimal")]
     [Precision(5, 2)]
@@ -24,5 +24,5 @@ public class Discount
     [ForeignKey(nameof(Software))]
     public int? SoftwareId { get; set; }
     
-    public Software Software { get; set; }
+    public Software Software { get; set; } = null!;
 }

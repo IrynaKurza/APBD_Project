@@ -17,7 +17,7 @@ public class Contract
     public int SoftwareId { get; set; }
     
     [MaxLength(20)]
-    public string SoftwareVersion { get; set; }
+    public string SoftwareVersion { get; set; } = null!;
     
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
@@ -31,7 +31,7 @@ public class Contract
     public bool IsCancelled { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    public Client Client { get; set; }
-    public Software Software { get; set; }
-    public ICollection<Payment> Payments { get; set; }
+    public Client Client { get; set; } = null!;
+    public Software Software { get; set; } = null!;
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

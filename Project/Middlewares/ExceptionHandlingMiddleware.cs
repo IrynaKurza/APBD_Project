@@ -1,7 +1,7 @@
 using System.Net;
 using Project.Exceptions;
 
-namespace RevenueRecognitionSystem.Middlewares;
+namespace Project.Middlewares;
 
 public static class ExceptionHandlingMiddlewareExtension
 {

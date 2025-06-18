@@ -20,7 +20,7 @@ public class Payment
     public DateTime PaymentDate { get; set; }
     
     [MaxLength(50)]
-    public string PaymentMethod { get; set; }
+    public string PaymentMethod { get; set; } = null!;
     
-    public Contract Contract { get; set; }
+    public Contract Contract { get; set; } = null!;
 }

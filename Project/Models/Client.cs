@@ -7,18 +7,17 @@ public abstract class Client
 {
     [Key]
     public int Id { get; set; }
-    
-    [MaxLength(200)]
-    public string Address { get; set; }
+
+    [MaxLength(200)] public string Address { get; set; } = null!;
     
     [MaxLength(100)]
-    public string Email { get; set; }
+    public string Email { get; set; } = null!;
     
     [MaxLength(20)]
-    public string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = null!;
     
     public DateTime CreatedAt { get; set; }
     public bool IsDeleted { get; set; }
     
-    public ICollection<Contract> Contracts { get; set; }
+    public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 }
