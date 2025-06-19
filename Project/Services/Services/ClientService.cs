@@ -200,10 +200,9 @@ public class ClientService : IClientService
 
     public async Task<bool> IsReturningClient(int clientId)
     {
-        // Check if client has any signed contracts
-        var hasHistory = await _context.Contracts
+        var hasSignedContract = await _context.Contracts
             .AnyAsync(c => c.ClientId == clientId && c.IsSigned);
-
-        return hasHistory;
+    
+        return hasSignedContract;
     }
 }

@@ -162,8 +162,13 @@ public class ContractServiceTests
     {
         // Arrange
         using var context = GetInMemoryDbContext();
-        var clientService = Mock.Of<IClientService>();
-        var service = new ContractService(context, clientService);
+    
+        // FIXED: Properly mock the client service to return true for returning client
+        var clientServiceMock = new Mock<IClientService>();
+        clientServiceMock.Setup(x => x.IsReturningClient(2))
+            .ReturnsAsync(true); // Client 2 is a returning client
+    
+        var service = new ContractService(context, clientServiceMock.Object);
 
         var dto = new CreateContractDto
         {

@@ -225,49 +225,49 @@ public class BusinessLogicIntegrationTests
         }
     }
 
+    // Fix for BusinessLogicIntegrationTests.cs
+// Replace the ContractExpiration_PreventPaymentAfterDeadline test method:
+
     [Fact]
     public async Task ContractExpiration_PreventPaymentAfterDeadline()
     {
         // Arrange
         using var context = GetInMemoryDbContext();
-        var clientService = Mock.Of<IClientService>();
-        var contractService = new ContractService(context, clientService);
         var paymentService = new PaymentService(context);
 
-        // Create contract that expires in the past
-        var expiredContractDto = new CreateContractDto
+        // FIXED: Create expired contract directly in database to bypass validation
+        var expiredContract = new Contract
         {
             ClientId = 1,
             SoftwareId = 1,
             SoftwareVersion = "1.0",
             StartDate = DateTime.UtcNow.AddDays(-10),
             EndDate = DateTime.UtcNow.AddDays(-1), // Expired yesterday
-            AdditionalSupportYears = 0
+            Price = 5000m,
+            AdditionalSupportYears = 0,
+            IsSigned = false,
+            IsCancelled = false,
+            CreatedAt = DateTime.UtcNow.AddDays(-10)
         };
 
-        var contract = await contractService.CreateContract(expiredContractDto);
+        context.Contracts.Add(expiredContract);
+        await context.SaveChangesAsync();
 
         // Act & Assert - Payment should fail due to expiration
-        if (contract != null)
+        var paymentDto = new CreatePaymentDto
         {
-            var paymentDto = new CreatePaymentDto
-            {
-                ContractId = contract.Id,
-                Amount = contract.Price,
-                PaymentMethod = "Credit Card"
-            };
+            ContractId = expiredContract.Id,
+            Amount = expiredContract.Price,
+            PaymentMethod = "Credit Card"
+        };
 
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                () => paymentService.CreatePayment(paymentDto));
-        }
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => paymentService.CreatePayment(paymentDto));
 
         // Verify contract is cancelled
-        if (contract != null)
-        {
-            var cancelledContract = await context.Contracts.FindAsync(contract.Id);
-            Assert.NotNull(cancelledContract);
-            Assert.True(cancelledContract.IsCancelled);
-        }
+        var cancelledContract = await context.Contracts.FindAsync(expiredContract.Id);
+        Assert.NotNull(cancelledContract);
+        Assert.True(cancelledContract.IsCancelled);
     }
 
     [Fact]

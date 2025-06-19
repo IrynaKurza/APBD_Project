@@ -34,15 +34,35 @@ public class ClientsController : ControllerBase
     [HttpPost("individual")]
     public async Task<IActionResult> CreateIndividual(CreateIndividualClientDto dto)
     {
-        var client = await _clientService.CreateIndividualClient(dto);
-        return Ok(client);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var client = await _clientService.CreateIndividualClient(dto);
+            return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while creating the client");
+        }
     }
 
     [HttpPost("company")]
     public async Task<IActionResult> CreateCompany(CreateCompanyClientDto dto)
     {
-        var client = await _clientService.CreateCompanyClient(dto);
-        return Ok(client);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var client = await _clientService.CreateCompanyClient(dto);
+            return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while creating the client");
+        }
     }
 
     [HttpDelete("{id}")]

@@ -34,8 +34,26 @@ public class ContractsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateContractDto dto)
     {
-        var contract = await _contractService.CreateContract(dto);
-        return Ok(contract);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var contract = await _contractService.CreateContract(dto);
+            return CreatedAtAction(nameof(Get), new { id = contract.Id }, contract);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while creating the contract");
+        }
     }
 
     [HttpDelete("{id}")]
