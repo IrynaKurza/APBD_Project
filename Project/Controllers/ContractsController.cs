@@ -28,7 +28,6 @@ public class ContractsController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var contract = await _contractService.GetContract(id);
-        if (contract == null) return NotFound();
         return Ok(contract);
     }
 

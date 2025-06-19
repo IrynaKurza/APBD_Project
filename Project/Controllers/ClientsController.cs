@@ -28,7 +28,6 @@ public class ClientsController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var client = await _clientService.GetClientById(id);
-        if (client == null) return NotFound();
         return Ok(client);
     }
 
@@ -50,8 +49,72 @@ public class ClientsController : ControllerBase
     [Authorize(Roles = "admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _clientService.DeleteClient(id);
-        if (!result) return NotFound();
-        return NoContent();
+        try
+        {
+            var result = await _clientService.DeleteClient(id);
+            if (!result) return NotFound($"Client with ID {id} not found");
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+    
+    [HttpPut("individual/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> UpdateIndividual(int id, [FromBody] UpdateIndividualClientDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var client = await _clientService.UpdateIndividualClient(id, dto);
+            if (client == null) 
+                return NotFound($"Individual client with ID {id} not found");
+        
+            return Ok(client);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while updating the client");
+        }
+    }
+    
+    [HttpPut("company/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> UpdateCompany(int id, [FromBody] UpdateCompanyClientDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var client = await _clientService.UpdateCompanyClient(id, dto);
+            if (client == null) 
+                return NotFound($"Company client with ID {id} not found");
+        
+            return Ok(client);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while updating the client");
+        }
+    }
+    
+    [HttpGet("{id:int}/returning-status")]
+    public async Task<IActionResult> GetReturningStatus(int id)
+    {
+        try
+        {
+            var isReturning = await _clientService.IsReturningClient(id);
+            return Ok(new { ClientId = id, IsReturningClient = isReturning });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while checking client status");
+        }
+    }
+    
 }

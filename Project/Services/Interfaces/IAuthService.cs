@@ -1,6 +1,6 @@
 using Project.DTOs.AuthDTOs;
 
-namespace Project.Services;
+namespace Project.Services.Interfaces;
 
 public interface IAuthService
 {

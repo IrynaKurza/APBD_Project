@@ -34,7 +34,7 @@ public class ClientService : IClientService
         return clients;
     }
 
-    public async Task<ClientResponseDto> GetClientById(int id)
+    public async Task<ClientResponseDto?> GetClientById(int id)
     {
         var client = await _context.Set<Client>()
             .Where(c => c.Id == id && !c.IsDeleted)
@@ -124,10 +124,86 @@ public class ClientService : IClientService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<ClientResponseDto?> UpdateIndividualClient(int id, UpdateIndividualClientDto dto)
+    {
+        var client = await _context.Set<IndividualClient>()
+            .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
+
+        if (client == null) return null;
+
+        // Update only provided fields
+        if (!string.IsNullOrEmpty(dto.Email))
+            client.Email = dto.Email;
+
+        if (!string.IsNullOrEmpty(dto.PhoneNumber))
+            client.PhoneNumber = dto.PhoneNumber;
+
+        if (!string.IsNullOrEmpty(dto.Address))
+            client.Address = dto.Address;
+
+        if (!string.IsNullOrEmpty(dto.FirstName))
+            client.FirstName = dto.FirstName;
+
+        if (!string.IsNullOrEmpty(dto.LastName))
+            client.LastName = dto.LastName;
+
+        // Note: PESEL cannot be updated per business requirements
+
+        await _context.SaveChangesAsync();
+
+        return new ClientResponseDto
+        {
+            Id = client.Id,
+            Type = "Individual",
+            Name = $"{client.FirstName} {client.LastName}",
+            Email = client.Email,
+            PhoneNumber = client.PhoneNumber,
+            Address = client.Address
+        };
+    }
+
+    public async Task<ClientResponseDto?> UpdateCompanyClient(int id, UpdateCompanyClientDto dto)
+    {
+        var client = await _context.Set<CompanyClient>()
+            .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
+
+        if (client == null) return null;
+
+        // Update only provided fields
+        if (!string.IsNullOrEmpty(dto.Email))
+            client.Email = dto.Email;
+
+        if (!string.IsNullOrEmpty(dto.PhoneNumber))
+            client.PhoneNumber = dto.PhoneNumber;
+
+        if (!string.IsNullOrEmpty(dto.Address))
+            client.Address = dto.Address;
+
+        if (!string.IsNullOrEmpty(dto.CompanyName))
+            client.CompanyName = dto.CompanyName;
+
+        // Note: KRS number cannot be updated per business requirements
+
+        await _context.SaveChangesAsync();
+
+        return new ClientResponseDto
+        {
+            Id = client.Id,
+            Type = "Company",
+            Name = client.CompanyName,
+            Email = client.Email,
+            PhoneNumber = client.PhoneNumber,
+            Address = client.Address
+        };
+    }
 
     public async Task<bool> IsReturningClient(int clientId)
     {
-        return await _context.Contracts
+        // Check if client has any signed contracts
+        var hasHistory = await _context.Contracts
             .AnyAsync(c => c.ClientId == clientId && c.IsSigned);
+
+        return hasHistory;
     }
 }

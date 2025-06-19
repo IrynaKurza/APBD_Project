@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Project.Data;
-using Project.Services;
 using Project.Services.Interfaces;
 using Project.Services.Services;
 using Project.Middlewares;
-using Scalar.AspNetCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,17 +45,19 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IRevenueService, RevenueService>();
+builder.Services.AddScoped<ISoftwareService, SoftwareService>();
 
 // API Documentation
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

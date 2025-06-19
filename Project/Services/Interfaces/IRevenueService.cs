@@ -4,6 +4,5 @@ namespace Project.Services.Interfaces;
 
 public interface IRevenueService
 {
-    Task<RevenueResponseDto> CalculateCurrentRevenue(RevenueQueryDto query);
-    Task<RevenueResponseDto> CalculatePredictedRevenue(RevenueQueryDto query);
+    Task<RevenueResponseDto> CalculateRevenue(RevenueQueryDto query);
 }

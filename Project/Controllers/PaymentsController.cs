@@ -18,10 +18,28 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreatePaymentDto dto)
+    public async Task<IActionResult> Create([FromBody] CreatePaymentDto dto)
     {
-        var payment = await _paymentService.CreatePayment(dto);
-        return Ok(payment);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var payment = await _paymentService.CreatePayment(dto);
+            return CreatedAtAction(nameof(GetForContract), new { contractId = dto.ContractId }, payment);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while processing payment");
+        }
     }
 
     [HttpGet("contract/{contractId}")]
@@ -30,4 +48,19 @@ public class PaymentsController : ControllerBase
         var payments = await _paymentService.GetPaymentsForContract(contractId);
         return Ok(payments);
     }
+    
+    [HttpPost("validate")]
+    public async Task<IActionResult> ValidatePayment([FromQuery] int contractId, [FromQuery] decimal amount)
+    {
+        try
+        {
+            var validation = await _paymentService.ValidatePayment(contractId, amount);
+            return Ok(validation);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while validating payment");
+        }
+    }
+    
 }

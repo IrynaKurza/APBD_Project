@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Project.DTOs.RevenueDTOs;
 
 public class RevenueQueryDto

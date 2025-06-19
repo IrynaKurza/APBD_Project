@@ -6,4 +6,5 @@ public interface IPaymentService
 {
     Task<PaymentResponseDto> CreatePayment(CreatePaymentDto dto);
     Task<List<PaymentResponseDto>> GetPaymentsForContract(int contractId);
+    Task<PaymentValidationDto> ValidatePayment(int contractId, decimal amount);
 }

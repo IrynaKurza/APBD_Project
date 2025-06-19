@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Project.DTOs.AuthDTOs;
-using Project.Services;
+using Project.Services.Interfaces;
 
 namespace Project.Controllers;
 

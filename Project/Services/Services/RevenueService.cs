@@ -8,37 +8,24 @@ namespace Project.Services.Services;
 public class RevenueService : IRevenueService
 {
     private readonly DatabaseContext _context;
-
-    public RevenueService(DatabaseContext context)
+    
+    public RevenueService(DatabaseContext context) 
     {
         _context = context;
     }
-
-    public async Task<RevenueResponseDto> CalculateCurrentRevenue(RevenueQueryDto query)
+    
+    public async Task<RevenueResponseDto> CalculateRevenue(RevenueQueryDto query)
     {
-        var paymentsQuery = _context.Payments
-            .Include(p => p.Contract)
-            .Where(p => p.Contract.IsSigned);
+        // 1. Calculate CURRENT revenue - from SIGNED contracts only  
+        var signedContractsQuery = _context.Contracts
+            .Where(c => c.IsSigned && !c.IsCancelled);
 
         if (query.SoftwareId.HasValue)
-            paymentsQuery = paymentsQuery.Where(p => p.Contract.SoftwareId == query.SoftwareId.Value);
+            signedContractsQuery = signedContractsQuery.Where(c => c.SoftwareId == query.SoftwareId.Value);
 
-        var totalRevenue = await paymentsQuery.SumAsync(p => p.Amount);
+        var currentRevenue = await signedContractsQuery.SumAsync(c => c.Price);
 
-        return new RevenueResponseDto
-        {
-            Amount = totalRevenue,
-            Currency = query.Currency,
-            CalculationType = "Current"
-        };
-    }
-
-    public async Task<RevenueResponseDto> CalculatePredictedRevenue(RevenueQueryDto query)
-    {
-        // Current revenue
-        var current = await CalculateCurrentRevenue(query);
-
-        // Add unsigned contracts
+        // 2. Calculate PREDICTED revenue - add unsigned contracts
         var unsignedContractsQuery = _context.Contracts
             .Where(c => !c.IsSigned && !c.IsCancelled && c.EndDate > DateTime.UtcNow);
 
@@ -46,12 +33,33 @@ public class RevenueService : IRevenueService
             unsignedContractsQuery = unsignedContractsQuery.Where(c => c.SoftwareId == query.SoftwareId.Value);
 
         var predictedAdditionalRevenue = await unsignedContractsQuery.SumAsync(c => c.Price);
+        var totalRevenue = currentRevenue + predictedAdditionalRevenue; 
+
+        // 3. Currency conversion
+        var currency = query.Currency;
+        
+        if (currency != "PLN")
+        {
+            var exchangeRate = GetSimpleExchangeRate(currency);
+            totalRevenue *= exchangeRate; 
+        }
 
         return new RevenueResponseDto
         {
-            Amount = current.Amount + predictedAdditionalRevenue,
-            Currency = query.Currency,
-            CalculationType = "Predicted"
+            Amount = Math.Round(totalRevenue, 2),
+            Currency = currency,
+            CalculationType = "Predicted" 
+        };
+    }
+
+    private decimal GetSimpleExchangeRate(string currency)
+    {
+        return currency.ToUpper() switch
+        {
+            "USD" => 0.25m,
+            "EUR" => 0.23m,
+            "GBP" => 0.20m,
+            _ => 1.0m
         };
     }
 }

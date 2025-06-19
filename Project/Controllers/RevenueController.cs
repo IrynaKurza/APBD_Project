@@ -16,18 +16,18 @@ public class RevenueController : ControllerBase
     {
         _revenueService = revenueService;
     }
-
-    [HttpGet("current")]
-    public async Task<IActionResult> GetCurrentRevenue([FromQuery] RevenueQueryDto query)
+    
+    [HttpGet]
+    public async Task<IActionResult> GetRevenue([FromQuery] RevenueQueryDto query)
     {
-        var revenue = await _revenueService.CalculateCurrentRevenue(query);
-        return Ok(revenue);
-    }
-
-    [HttpGet("predicted")]
-    public async Task<IActionResult> GetPredictedRevenue([FromQuery] RevenueQueryDto query)
-    {
-        var revenue = await _revenueService.CalculatePredictedRevenue(query);
-        return Ok(revenue);
+        try
+        {
+            var revenue = await _revenueService.CalculateRevenue(query);
+            return Ok(revenue);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while calculating revenue", error = ex.Message });
+        }
     }
 }
