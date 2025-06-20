@@ -16,6 +16,9 @@ public class PaymentService : IPaymentService
     }
     
     public async Task<PaymentResponseDto> CreatePayment(CreatePaymentDto dto)
+{
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
     {
         // 1. Find contract with all related data
         var contract = await _context.Contracts
@@ -39,6 +42,7 @@ public class PaymentService : IPaymentService
             // Auto-cancel expired contract
             contract.IsCancelled = true;
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
             throw new InvalidOperationException("Payment deadline exceeded - contract has been cancelled");
         }
 
@@ -76,6 +80,7 @@ public class PaymentService : IPaymentService
         }
 
         await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return new PaymentResponseDto
         {
@@ -88,6 +93,12 @@ public class PaymentService : IPaymentService
             RemainingBalance = contract.Price - newTotalPaid
         };
     }
+    catch
+    {
+        await transaction.RollbackAsync();
+        throw;
+    }
+}
 
     public async Task<List<PaymentResponseDto>> GetPaymentsForContract(int contractId)
     {

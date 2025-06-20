@@ -69,6 +69,9 @@ public class ContractService : IContractService
     }
 
     public async Task<ContractResponseDto?> CreateContract(CreateContractDto dto)
+{
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
     {
         // 1. Validate contract timeframe (3-30 days)
         var timespan = dto.EndDate - dto.StartDate;
@@ -156,9 +159,16 @@ public class ContractService : IContractService
 
         _context.Contracts.Add(contract);
         await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return await GetContract(contract.Id);
     }
+    catch
+    {
+        await transaction.RollbackAsync();
+        throw;
+    }
+}
 
 
     public async Task<bool> RemoveContract(int id)
