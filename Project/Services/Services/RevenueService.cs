@@ -16,22 +16,23 @@ public class RevenueService : IRevenueService
     
     public async Task<RevenueResponseDto> CalculateRevenue(RevenueQueryDto query)
     {
-        // Calculate CURRENT revenue - from SIGNED contracts only  
-        var signedContractsQuery = _context.Contracts
-            .Where(c => c.IsSigned && !c.IsCancelled);
+        decimal totalRevenue;
+        string calculationType;
 
-        if (query.SoftwareId.HasValue)
-            signedContractsQuery = signedContractsQuery.Where(c => c.SoftwareId == query.SoftwareId.Value);
-
-        var currentRevenue = await signedContractsQuery.SumAsync(c => c.Price);
-
-        // Default to current revenue only (what tests expect)
-        decimal totalRevenue = currentRevenue;
-        string calculationType = "Current";
+        // Determine which type of revenue to calculate
+        if (query.RevenueType.ToLower() == "predicted")
+        {
+            totalRevenue = await CalculatePredictedRevenue(query.SoftwareId);
+            calculationType = "Predicted";
+        }
+        else
+        {
+            totalRevenue = await CalculateCurrentRevenue(query.SoftwareId);
+            calculationType = "Current";
+        }
 
         // Currency conversion
         var currency = query.Currency;
-    
         if (currency != "PLN")
         {
             var exchangeRate = GetSimpleExchangeRate(currency);
@@ -44,6 +45,42 @@ public class RevenueService : IRevenueService
             Currency = currency,
             CalculationType = calculationType
         };
+    }
+    
+    
+    // Calculate CURRENT revenue - only from SIGNED contracts
+    private async Task<decimal> CalculateCurrentRevenue(int? softwareId)
+    {
+        var signedContractsQuery = _context.Contracts
+            .Where(c => c.IsSigned && !c.IsCancelled);
+
+        if (softwareId.HasValue)
+            signedContractsQuery = signedContractsQuery.Where(c => c.SoftwareId == softwareId.Value);
+
+        return await signedContractsQuery.SumAsync(c => c.Price);
+    }
+
+
+    // Calculate PREDICTED revenue - signed contracts + unsigned active contracts
+    // Business assumption: "All unsigned contracts will eventually be signed"
+    private async Task<decimal> CalculatePredictedRevenue(int? softwareId)
+    {
+        // 1. Get current revenue (signed contracts)
+        var currentRevenue = await CalculateCurrentRevenue(softwareId);
+
+        // 2. Get potential revenue from unsigned contracts (still within deadline)
+        var unsignedContractsQuery = _context.Contracts
+            .Where(c => !c.IsSigned && 
+                       !c.IsCancelled && 
+                       c.EndDate > DateTime.UtcNow); // Only active contracts
+
+        if (softwareId.HasValue)
+            unsignedContractsQuery = unsignedContractsQuery.Where(c => c.SoftwareId == softwareId.Value);
+
+        var potentialRevenue = await unsignedContractsQuery.SumAsync(c => c.Price);
+
+        // 3. Predicted = Current + Potential
+        return currentRevenue + potentialRevenue;
     }
 
     private decimal GetSimpleExchangeRate(string currency)
