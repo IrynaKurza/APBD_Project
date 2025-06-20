@@ -40,7 +40,7 @@ public class ClientsController : ControllerBase
                 return BadRequest(ModelState);
 
             var client = await _clientService.CreateIndividualClient(dto);
-            return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
+            return Created($"/api/Clients/{client.Id}", client); 
         }
         catch (Exception)
         {
@@ -57,7 +57,7 @@ public class ClientsController : ControllerBase
                 return BadRequest(ModelState);
 
             var client = await _clientService.CreateCompanyClient(dto);
-            return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
+            return Created($"/api/Clients/{client.Id}", client); 
         }
         catch (Exception)
         {

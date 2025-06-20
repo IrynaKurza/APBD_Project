@@ -12,7 +12,7 @@ public class CreateCompanyClientDto
     [MaxLength(10, ErrorMessage = "KRS number must be exactly 10 digits")]
     [MinLength(10, ErrorMessage = "KRS number must be exactly 10 digits")]
     [RegularExpression(@"^\d{10}$", ErrorMessage = "KRS number must contain exactly 10 digits")]
-    public string KRSNumber { get; set; } = null!; // Changed from KRS to KRSNumber
+    public string KRSNumber { get; set; } = null!;
     
     [Required(ErrorMessage = "Address is required")]
     [MaxLength(200, ErrorMessage = "Address cannot exceed 200 characters")]

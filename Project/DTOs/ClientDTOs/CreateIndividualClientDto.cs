@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+namespace Project.DTOs.ClientDTOs;
+
 public class CreateIndividualClientDto
 {
     [Required(ErrorMessage = "First name is required")]

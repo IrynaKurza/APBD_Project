@@ -11,7 +11,7 @@ public class Discount
     public int Id { get; set; }
     
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } = string.Empty;
     
     [Column(TypeName = "decimal")]
     [Precision(5, 2)]

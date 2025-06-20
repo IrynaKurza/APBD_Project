@@ -9,6 +9,4 @@ public class UpdateIndividualClientDto : UpdateClientDto
     
     [MaxLength(50, ErrorMessage = "Last name cannot exceed 50 characters")]
     public string? LastName { get; set; }
-    
-    // Note: PESEL cannot be updated per business requirements
 }

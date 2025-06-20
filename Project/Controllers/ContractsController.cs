@@ -40,6 +40,11 @@ public class ContractsController : ControllerBase
                 return BadRequest(ModelState);
 
             var contract = await _contractService.CreateContract(dto);
+        
+            // Fix the nullable reference warning
+            if (contract == null)
+                return StatusCode(500, "Failed to create contract");
+
             return CreatedAtAction(nameof(Get), new { id = contract.Id }, contract);
         }
         catch (ArgumentException ex)

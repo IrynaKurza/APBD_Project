@@ -10,16 +10,16 @@ public class Employee
     public int Id { get; set; }
     
     [MaxLength(50)]
-    public string FirstName { get; set; } = null!;
+    public string FirstName { get; set; } = string.Empty;
     
     [MaxLength(50)]
-    public string LastName { get; set; } = null!;
+    public string LastName { get; set; } = string.Empty;
     
     [MaxLength(100)]
-    public string Email { get; set; } = null!;
+    public string Email { get; set; } = string.Empty;
     
     [MaxLength(256)]
-    public string PasswordHash { get; set; } = null!;
+    public string PasswordHash { get; set; } = string.Empty;
     
     public int RoleId { get; set; }
     

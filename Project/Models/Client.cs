@@ -8,13 +8,14 @@ public abstract class Client
     [Key]
     public int Id { get; set; }
 
-    [MaxLength(200)] public string Address { get; set; } = null!;
+    [MaxLength(200)] 
+    public string Address { get; set; } = string.Empty;
     
     [MaxLength(100)]
-    public string Email { get; set; } = null!;
+    public string Email { get; set; } = string.Empty;
     
     [MaxLength(20)]
-    public string PhoneNumber { get; set; } = null!;
+    public string PhoneNumber { get; set; } = string.Empty;
     
     public DateTime CreatedAt { get; set; }
     public bool IsDeleted { get; set; }

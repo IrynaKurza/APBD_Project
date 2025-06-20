@@ -12,16 +12,16 @@ public class Software
     public int Id { get; set; }
     
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } = string.Empty;
     
     [MaxLength(500)]
-    public string Description { get; set; } = null!;
+    public string Description { get; set; } = string.Empty;
     
     [MaxLength(20)]
-    public string CurrentVersion { get; set; } = null!;
+    public string CurrentVersion { get; set; } = string.Empty;
     
     [MaxLength(50)]
-    public string Category { get; set; } = null!;
+    public string Category { get; set; } = string.Empty;
     
     [Column(TypeName = "decimal")]
     [Precision(18, 2)]

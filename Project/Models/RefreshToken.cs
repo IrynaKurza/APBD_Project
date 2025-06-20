@@ -10,7 +10,7 @@ public class RefreshToken
     public int EmployeeId { get; set; }
     
     [MaxLength(128)]
-    public string Token { get; set; } = null!;
+    public string Token { get; set; } = string.Empty;
     
     public DateTime ExpiresAt { get; set; }
     
