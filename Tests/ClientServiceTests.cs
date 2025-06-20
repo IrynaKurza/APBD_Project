@@ -92,7 +92,7 @@ public class ClientServiceTests
             Email = "new@company.com",
             PhoneNumber = "555666777",
             Address = "New Address",
-            KRSNumber = "0000999888" // Use correct property name
+            KRSNumber = "0000999888" 
         };
 
         // Act

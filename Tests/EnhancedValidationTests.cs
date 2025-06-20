@@ -226,8 +226,6 @@ public class DatabaseConstraintTests
     [Fact]
     public void ServiceLayer_WouldHandleDuplicates()
     {
-        // Since we can't test actual constraint violations with InMemory,
-        // we can test that the service layer would handle this correctly
         using var context = GetInMemoryDbContext();
         
         // Create a client with a specific PESEL
@@ -250,17 +248,11 @@ public class DatabaseConstraintTests
             .FirstOrDefault(c => c.PESEL == "80010112345");
         Assert.NotNull(existingClient);
         
-        // This shows that in real service layer, you could check:
-        // if (context.IndividualClients.Any(c => c.PESEL == dto.PESEL))
-        //     throw new InvalidOperationException("PESEL already exists");
     }
 }
 
 public class ControllerValidationIntegrationTests
 {
-    // These would test the actual controller validation
-    // You'd need to set up a test server for full integration testing
-    
     [Fact]
     public void UpdateClientDto_CannotChangePESEL_FieldNotPresent()
     {

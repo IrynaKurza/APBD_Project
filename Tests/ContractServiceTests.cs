@@ -106,7 +106,6 @@ public class ContractServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2000m, result.Price); // 1000 base + 1000 for 1 additional year
-        // REMOVED: AdditionalSupportYears is not in ContractResponseDto
     }
 
     [Fact]
@@ -163,7 +162,7 @@ public class ContractServiceTests
         // Arrange
         using var context = GetInMemoryDbContext();
     
-        // FIXED: Properly mock the client service to return true for returning client
+        // Properly mock the client service to return true for returning client
         var clientServiceMock = new Mock<IClientService>();
         clientServiceMock.Setup(x => x.IsReturningClient(2))
             .ReturnsAsync(true); // Client 2 is a returning client

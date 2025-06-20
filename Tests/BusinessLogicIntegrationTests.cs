@@ -55,7 +55,7 @@ public class BusinessLogicIntegrationTests
             Email = "returning@corp.com",
             PhoneNumber = "987654321",
             Address = "Corp Address",
-            KRSNumber = "0000123456", // Fixed property name
+            KRSNumber = "0000123456", 
             IsDeleted = false,
             CreatedAt = DateTime.UtcNow
         };
@@ -225,9 +225,6 @@ public class BusinessLogicIntegrationTests
         }
     }
 
-    // Fix for BusinessLogicIntegrationTests.cs
-// Replace the ContractExpiration_PreventPaymentAfterDeadline test method:
-
     [Fact]
     public async Task ContractExpiration_PreventPaymentAfterDeadline()
     {
@@ -235,7 +232,7 @@ public class BusinessLogicIntegrationTests
         using var context = GetInMemoryDbContext();
         var paymentService = new PaymentService(context);
 
-        // FIXED: Create expired contract directly in database to bypass validation
+        // Create expired contract directly in database to bypass validation
         var expiredContract = new Contract
         {
             ClientId = 1,
@@ -335,7 +332,7 @@ public class BusinessLogicIntegrationTests
             // Assert
             Assert.NotNull(validation);
             Assert.True(validation.IsValid);
-            Assert.Equal(5000m, validation.RemainingBalance); // FIXED: Use RemainingBalance instead of RemainingAfterPayment
+            Assert.Equal(5000m, validation.RemainingBalance);
         }
 
         // Act - Validate excessive payment

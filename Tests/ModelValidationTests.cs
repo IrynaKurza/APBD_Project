@@ -48,7 +48,7 @@ public class ModelValidationTests
             Email = "test@company.com",
             PhoneNumber = "123456789",
             Address = "Test Address",
-            KRSNumber = krsNumber // Use correct property name
+            KRSNumber = krsNumber 
         };
         
         // Act & Assert
